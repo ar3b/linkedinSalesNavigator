@@ -75,13 +75,14 @@ $request = Requests::post(
         "cookies" => $cookies,
     )
 );
-
+l("Response:");
 r("Login status code", $request->status_code);
 if ($request->status_code!=200) {
     die();
 }
-
-r("Response body", $request->body);
+$body = json_decode($request->body, true);
+r("Body", $request->body);
+r("Redirect url", $body["redirectUrl"]);
 l("New cookies:");
 $cookies = $request->cookies;
 foreach ($cookies as $c) {
@@ -90,8 +91,7 @@ foreach ($cookies as $c) {
         $c->value
     );
 }
-$body = json_decode($request->body, true);
-l("Redirect url: ".$body["redirectUrl"]);
 sep();
+
 
 // Redirecting to 'redirect url'
