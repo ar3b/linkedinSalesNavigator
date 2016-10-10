@@ -93,7 +93,7 @@ foreach ($cookies as $c) {
 }
 sep();
 
-// Redirect request
+// Redirecting to 'redirect url'
 
 $redirect_headers = array_merge(
     $_BROWSER_HEADERS,
@@ -111,5 +111,3 @@ $request = Requests::get(
 );
 
 r("Redirect status code", $request->status_code);
-
-// Redirecting to 'redirect url'
