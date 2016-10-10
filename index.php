@@ -93,6 +93,8 @@ foreach ($cookies as $c) {
 }
 sep();
 
+// Redirect request
+
 $redirect_headers = array_merge(
     $_BROWSER_HEADERS,
     array(
