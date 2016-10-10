@@ -93,5 +93,21 @@ foreach ($cookies as $c) {
 }
 sep();
 
+$redirect_headers = array_merge(
+    $_BROWSER_HEADERS,
+    array(
+        "Referer" => "https://www.linkedin.com/uas/login?goback=&trk=hb_signin",
+    )
+);
+
+$request = Requests::get(
+    $body["redirectUrl"],
+    $redirect_headers,
+    array(
+        "cookies" => $cookies,
+    )
+);
+
+r("Redirect status code", $request->status_code);
 
 // Redirecting to 'redirect url'
