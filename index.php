@@ -38,6 +38,7 @@ function check_is_logged_in($url, &$cookies, $headers) {
 header('Content-Type: text/html; charset=utf-8');
 echo "<pre>".PHP_EOL;
 
+$cookies = array();
 if ((!$_NEED_LOGGEN_IN) and file_exists($_COOKIES_FILE)) {
     $cookies = unserialize(file_get_contents($_COOKIES_FILE));
     $_NEED_LOGGEN_IN = !check_is_logged_in(
@@ -152,4 +153,22 @@ if (($_NEED_LOGGEN_IN) or (!file_exists($_COOKIES_FILE))) {
     $cookies = $request->cookies;
     file_put_contents($_COOKIES_FILE, serialize($cookies));
 
+}
+
+$request = Requests::get(
+   "https://www.linkedin.com/sales/?trk=sn_nav2__logo",
+    $_BROWSER_HEADERS,
+    array(
+        "cookies" => $cookies,
+    )
+);
+
+$sales_doc = new Document();
+$sales_doc->loadHtml($request->body);
+$body = $sales_doc->xpath("//body[contains(@id, 'pagekey-sales-home')]");
+if (count($body)==0) {
+    r("Sales check", "FAIL");
+    die();
+} else {
+    r("Sales check", "Ok");
 }
