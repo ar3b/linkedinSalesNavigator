@@ -155,6 +155,8 @@ if (($_NEED_LOGGEN_IN) or (!file_exists($_COOKIES_FILE))) {
 
 }
 
+// Checking is sales page
+
 $request = Requests::get(
    "https://www.linkedin.com/sales/?trk=sn_nav2__logo",
     $_BROWSER_HEADERS,
@@ -174,3 +176,5 @@ if (count($body)==0) {
 }
 
 sep();
+
+// Search
