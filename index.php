@@ -172,3 +172,5 @@ if (count($body)==0) {
 } else {
     r("Sales check", "Ok");
 }
+
+sep();
