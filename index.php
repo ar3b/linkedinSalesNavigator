@@ -82,6 +82,11 @@ if ($request->status_code!=200) {
 }
 $body = json_decode($request->body, true);
 r("Body", $request->body);
+if ($body["status"] != "ok") {
+    r("Login status", "FAIL");
+    die();
+}
+
 r("Redirect url", $body["redirectUrl"]);
 l("New cookies:");
 $cookies = $request->cookies;
@@ -111,3 +116,15 @@ $request = Requests::get(
 );
 
 r("Redirect status code", $request->status_code);
+
+// Checking is logged in
+
+$logged_doc = new Document();
+$logged_doc->loadHtml($request->body);
+$logout_link = $logged_doc->xpath("//a[contains(@href, 'https://www.linkedin.com/uas/logout')]");
+if (count($logout_link)==0) {
+    r("Login status", "FAIL");
+    die();
+} else {
+    r("Login status", "Done");
+}
