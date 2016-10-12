@@ -180,18 +180,22 @@ sep();
 // Search first page request
 
 $request = Requests::get(
-    "https://www.linkedin.com/sales/search?keywords=apple",
+    "https://www.linkedin.com/sales/search?keywords=apple&count=25&start=0",
     $_BROWSER_HEADERS,
     array(
         "cookies" => $cookies,
     )
 );
 
-file_put_contents("temp/save.html", $request->body);
-$search_doc = new Document();
-$search_doc->loadHtml($request->body);
+// First members results
+$search_doc = $request->body;
+$result = array();
+if (!preg_match('/\<code id=\"embedded\-json\"\>\<!\-\-(.*?)\-\-\>\<\/code\>/is', $search_doc, $result)) {
+    r("Embedded json search", "FAIL");
+    die();
+}
 
-$embed_json = $search_doc->xpath("//code[@id='embedded-json']/comment()");
-var_dump($embed_json[0]);
-die();
-var_dump(json_decode($embed_json[0]->text(), true));
+$result = json_decode($result[1], true);
+$request_data = $result["trackingInfoJson"];
+
+// Search second+ pages request
