@@ -180,7 +180,7 @@ sep();
 // Search first page request
 
 $request = Requests::get(
-    "https://www.linkedin.com/sales/search?keywords=apple&count=25&start=0",
+    "https://www.linkedin.com/sales/search?keywords=apple&count=25&start=25",
     $_BROWSER_HEADERS,
     array(
         "cookies" => $cookies,
@@ -189,6 +189,7 @@ $request = Requests::get(
 
 // First members results
 $search_doc = $request->body;
+$cookies = $request->cookies;
 $result = array();
 if (!preg_match('/\<code id=\"embedded\-json\"\>\<!\-\-(.*?)\-\-\>\<\/code\>/is', $search_doc, $result)) {
     r("Embedded json search", "FAIL");
@@ -196,6 +197,48 @@ if (!preg_match('/\<code id=\"embedded\-json\"\>\<!\-\-(.*?)\-\-\>\<\/code\>/is'
 }
 
 $result = json_decode($result[1], true);
-$request_data = $result["trackingInfoJson"];
 
-// Search second+ pages request
+// Additional info request
+foreach ($result["searchResults"] as $member) {
+    $company = $member["company"];
+    $member = $member["member"];
+    $url = "https://www.linkedin.com/sales/profile/".$member["memberId"].",".$member["authToken"].",".$member["authType"];
+    r("Name", $member["formattedName"]);
+    r("Title", htmlspecialchars_decode($member["title"]));
+    r("Company", strip_tags($company["companyName"]));
+    r("Location", $member["location"]);
+    r("Sales profile url", $url);
+    $request = Requests::get(
+        $url,
+        $_BROWSER_HEADERS,
+        array(
+            "cookies" => $cookies,
+        )
+    );
+
+    $member_doc = $request->body;
+
+    $result = array();
+    if (!preg_match('/\<code id=\"embedded\-json\"\>\<!\-\-(.*?)\-\-\>\<\/code\>/is', $member_doc, $result)) {
+        r("Embedded json search", "FAIL");
+        die();
+    }
+
+    $result = json_decode($result[1], true);
+
+    if (isset($result["profile"]["contactInfo"]["publicProfileUrl"])) {
+        r("Public url", $result["profile"]["contactInfo"]["publicProfileUrl"]);
+    }
+    if (isset($result["profile"]["contactInfo"]["twitterAccounts"])) {
+        foreach ($result["profile"]["contactInfo"]["twitterAccounts"] as $twitter) {
+            r("Twitter", "https://www.twitter.com/".$twitter);
+        }
+    }
+    if (isset($result["profile"]["contactInfo"]["emails"])) {
+        foreach ($result["profile"]["contactInfo"]["emails"] as $email) {
+            r("Email", $email);
+        }
+    }
+
+    sep();
+}
