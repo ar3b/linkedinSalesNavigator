@@ -204,7 +204,7 @@ foreach ($result["searchResults"] as $member) {
     $member = $member["member"];
     $url = "https://www.linkedin.com/sales/profile/".$member["memberId"].",".$member["authToken"].",".$member["authType"];
     r("Name", $member["formattedName"]);
-    r("Title", htmlspecialchars_decode($member["title"]));
+    r("Title", strip_tags(htmlspecialchars_decode($member["title"])));
     r("Company", strip_tags($company["companyName"]));
     r("Location", $member["location"]);
     r("Sales profile url", $url);
