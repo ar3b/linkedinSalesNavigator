@@ -179,8 +179,25 @@ sep();
 
 // Search first page request
 
+$titles_filter = array(
+    "Chief Marketing Officer",
+    "CMO",
+    "Head of Marketing",
+    "Paid Search",
+    "Performance Marketing",
+    "Digital Marketing",
+    "Marketing Manager",
+    "PPC",
+    "SEM"
+);
+
+$filter_url = "";
+foreach ($titles_filter as $f) {
+    $filter_url .= "&jobTitleEntities=".urlencode($f);
+}
+
 $request = Requests::get(
-    "https://www.linkedin.com/sales/search?keywords=apple&count=25&start=25",
+    "https://www.linkedin.com/sales/search?keywords=apple&count=25&start=0".$filter_url,
     $_BROWSER_HEADERS,
     array(
         "cookies" => $cookies,
